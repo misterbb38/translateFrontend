@@ -14,7 +14,7 @@ export default function TopBar() {
     <nav className="bg-base-200 rounded-b-lg shadow-lg flex justify-center mb-4">
       <ul className="menu menu-horizontal p-2">
         <li>
-          <Link to="/">Accueil</Link>
+          <Link to="/home">Accueil</Link>
         </li>
         {token ? (
           <>

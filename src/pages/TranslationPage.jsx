@@ -275,6 +275,7 @@ export default function TranslationPage() {
               placeholder="Entrez le texte à traduire"
               value={sourceText}
               onChange={(e) => setSourceText(e.target.value)}
+              height="200px"
             />
           </div>
 
