@@ -10,7 +10,7 @@
 //   useEffect(() => {
 //     const fetchHistory = async () => {
 //       try {
-//         const response = await fetch("http://localhost:5000/api/translations", {
+//         const response = await fetch("${apiUrl}/api/translations", {
 //           headers: { Authorization: `Bearer ${token}` },
 //         });
 //         const data = await response.json();
@@ -62,11 +62,12 @@ export default function TranslationHistory({ refreshTrigger }) {
   const [history, setHistory] = useState([]);
   const [error, setError] = useState("");
   const token = localStorage.getItem("token");
+  const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
 
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/translations", {
+        const response = await fetch(`${apiUrl}/api/translations`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();

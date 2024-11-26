@@ -15,9 +15,10 @@ export default function GlossaryCard({ glossary, onUpdate }) {
       "Voulez-vous vraiment supprimer ce glossaire ?"
     );
     if (confirmDelete) {
+      const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
       try {
         const response = await fetch(
-          `http://localhost:5000/api/glossaries/${glossary._id}`,
+          `${apiUrl}/api/glossaries/${glossary._id}`,
           {
             method: "DELETE",
             headers: { Authorization: `Bearer ${token}` },

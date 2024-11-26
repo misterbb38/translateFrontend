@@ -20,7 +20,7 @@
 //       const fetchGlossary = async () => {
 //         try {
 //           const response = await fetch(
-//             `http://localhost:5000/api/glossaries/${id}`,
+//             `${apiUrl}/api/glossaries/${id}`,
 //             {
 //               headers: { Authorization: `Bearer ${token}` },
 //             }
@@ -58,7 +58,7 @@
 
 //     try {
 //       const response = await fetch(
-//         `http://localhost:5000/api/glossaries${isEditMode ? `/${id}` : ""}`,
+//         `${apiUrl}/api/glossaries${isEditMode ? `/${id}` : ""}`,
 //         {
 //           method: isEditMode ? "PUT" : "POST",
 //           headers: {
@@ -207,18 +207,16 @@ export default function AddEditGlossaryPage() {
   const { id } = useParams();
   const isEditMode = !!id;
   const token = localStorage.getItem("token");
+  const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
 
   useEffect(() => {
     if (isEditMode) {
       // Récupérer les données du glossaire à modifier
       const fetchGlossary = async () => {
         try {
-          const response = await fetch(
-            `http://localhost:5000/api/glossaries/${id}`,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
+          const response = await fetch(`${apiUrl}/api/glossaries/${id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
           const data = await response.json();
 
           if (response.ok) {
@@ -252,7 +250,7 @@ export default function AddEditGlossaryPage() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/glossaries${isEditMode ? `/${id}` : ""}`,
+        `${apiUrl}/api/glossaries${isEditMode ? `/${id}` : ""}`,
         {
           method: isEditMode ? "PUT" : "POST",
           headers: {

@@ -6,12 +6,13 @@ import { Link } from "react-router-dom";
 export default function GlossaryPage() {
   const [glossaries, setGlossaries] = useState([]);
   const [error, setError] = useState("");
+  const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
 
   const fetchGlossaries = async () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://localhost:5000/api/glossaries", {
+      const response = await fetch(`${apiUrl}/api/glossaries`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await response.json();

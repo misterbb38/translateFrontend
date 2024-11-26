@@ -14,7 +14,8 @@ function App() {
     <Router>
       <TopBar />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<LoginPage />} />
+        <Route path="/home" element={<HomePage />} />
         <Route
           path="/translate"
           element={
@@ -47,7 +48,7 @@ function App() {
             </PrivateRoute>
           }
         />
-        <Route path="/login" element={<LoginPage />} />
+
         <Route path="/register" element={<RegisterPage />} />
       </Routes>
     </Router>

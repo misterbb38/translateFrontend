@@ -14,12 +14,13 @@ export default function TranslationPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0); // Ajout du refreshTrigge
   const [error, setError] = useState("");
   const token = localStorage.getItem("token");
+  const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
 
   // Récupérer les glossaires en fonction des langues sélectionnées
   useEffect(() => {
     const fetchGlossaries = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/glossaries", {
+        const response = await fetch(`${apiUrl}/api/glossaries`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await response.json();
@@ -59,22 +60,19 @@ export default function TranslationPage() {
     setError("");
 
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/translations/translate",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            text: sourceText,
-            glossaryId: selectedGlossaries[0], // Vous pouvez modifier pour supporter plusieurs glossaires
-            sourceLanguage,
-            targetLanguage,
-          }),
-        }
-      );
+      const response = await fetch(`${apiUrl}/api/translations/translate`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          text: sourceText,
+          glossaryId: selectedGlossaries[0], // Vous pouvez modifier pour supporter plusieurs glossaires
+          sourceLanguage,
+          targetLanguage,
+        }),
+      });
       const data = await response.json();
 
       if (response.ok) {
