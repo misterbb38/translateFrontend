@@ -1,0 +1,6 @@
+[
+    { "source": "maison", "target": "house" },
+    { "source": "chat", "target": "cat" },
+    { "source": "chien", "target": "dog" }
+  ]
+  
