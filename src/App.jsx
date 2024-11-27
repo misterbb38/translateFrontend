@@ -15,7 +15,15 @@ function App() {
       <TopBar />
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/home" element={<HomePage />} />
+        <Route
+          path="/home"
+          element={
+            <PrivateRoute>
+              {" "}
+              <HomePage />{" "}
+            </PrivateRoute>
+          }
+        />
         <Route
           path="/translate"
           element={

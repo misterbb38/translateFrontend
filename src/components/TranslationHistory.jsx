@@ -124,15 +124,13 @@
 //   );
 // }
 
-// src/components/TranslationHistory.jsx
-
 import { useState, useEffect } from "react";
 
 export default function TranslationHistory({ refreshTrigger }) {
   const [history, setHistory] = useState([]);
   const [error, setError] = useState("");
-  const [currentPage, setCurrentPage] = useState(1); // État pour la page actuelle
-  const itemsPerPage = 5; // Nombre de traductions par page
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   const token = localStorage.getItem("token");
   const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
 
@@ -157,25 +155,19 @@ export default function TranslationHistory({ refreshTrigger }) {
     };
 
     fetchHistory();
-  }, [token, refreshTrigger]); // Rafraîchir l'historique après chaque traduction
+  }, [token, refreshTrigger]);
 
-  // Calcul pour la pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = history.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(history.length / itemsPerPage);
 
-  // Fonctions de navigation
   const goToNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
   const goToPreviousPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const goToPage = (pageNumber) => {
-    setCurrentPage(pageNumber);
   };
 
   return (
@@ -212,29 +204,15 @@ export default function TranslationHistory({ refreshTrigger }) {
             ))}
           </div>
 
-          {/* Contrôles de pagination */}
+          {/* Pagination */}
           <div className="flex justify-center mt-6">
             <button
-              className="btn btn-outline mr-2"
+              className="btn btn-outline"
               onClick={goToPreviousPage}
               disabled={currentPage === 1}
             >
               Précédent
             </button>
-            {/* Affichage des numéros de page */}
-            <div className="flex space-x-2">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index + 1}
-                  className={`btn ${
-                    currentPage === index + 1 ? "btn-active" : "btn-outline"
-                  }`}
-                  onClick={() => goToPage(index + 1)}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
             <button
               className="btn btn-outline ml-2"
               onClick={goToNextPage}
