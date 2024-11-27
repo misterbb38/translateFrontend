@@ -200,8 +200,8 @@ import Papa from "papaparse";
 export default function AddEditGlossaryPage() {
   const [name, setName] = useState("");
   const [terms, setTerms] = useState([{ source: "", target: "" }]);
-  const [sourceLanguage, setSourceLanguage] = useState("fr");
-  const [targetLanguage, setTargetLanguage] = useState("en");
+  const [sourceLanguage, setSourceLanguage] = useState("français");
+  const [targetLanguage, setTargetLanguage] = useState("anglais");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { id } = useParams();
@@ -412,8 +412,9 @@ export default function AddEditGlossaryPage() {
               onChange={(e) => setSourceLanguage(e.target.value)}
               required
             >
-              <option value="fr">Français</option>
-              <option value="en">Anglais</option>
+              <option value="français">Français</option>
+              <option value="anglais">Anglais</option>
+              <option value="portugais">Portugais</option>
               {/* Ajouter d'autres langues avec leurs codes */}
             </select>
           </div>
@@ -425,8 +426,9 @@ export default function AddEditGlossaryPage() {
               onChange={(e) => setTargetLanguage(e.target.value)}
               required
             >
-              <option value="en">Anglais</option>
-              <option value="fr">Français</option>
+              <option value="anglais">Anglais</option>
+              <option value="français">Français</option>
+              <option value="portugais">Portugais</option>
               {/* Ajouter d'autres langues avec leurs codes */}
             </select>
           </div>
