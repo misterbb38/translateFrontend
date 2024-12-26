@@ -111,6 +111,7 @@
 //           >
 //             <option value="gemini">Google Gemini</option>
 //             <option value="claude">Anthropic Claude</option>
+//             <option value="gpt">OpenAI GPT-o1</option>
 //           </select>
 //         </div>
 
@@ -174,10 +175,12 @@
 //   );
 // }
 
+// src/pages/TranslationPage.jsx
 import { useState, useEffect } from "react";
 import { Copy } from "lucide-react";
 import GlossaryList from "../components/GlossaryList";
 import TranslationHistory from "../components/TranslationHistory";
+import AddTermModal from "../components/AddTermModal";
 
 export default function TranslationPage() {
   const [sourceText, setSourceText] = useState("");
@@ -191,6 +194,12 @@ export default function TranslationPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddTermModalOpen, setIsAddTermModalOpen] = useState(false);
+
+  // Pour stocker le texte sélectionné
+  const [selectedSourceSnippet, setSelectedSourceSnippet] = useState("");
+  const [selectedTargetSnippet, setSelectedTargetSnippet] = useState("");
+
   const token = localStorage.getItem("token");
   const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
 
@@ -203,6 +212,7 @@ export default function TranslationPage() {
         const data = await response.json();
 
         if (response.ok) {
+          // Filtrer par langue, comme avant
           const filteredGlossaries = data.filter(
             (glossary) =>
               glossary.sourceLanguage === sourceLanguage &&
@@ -265,8 +275,48 @@ export default function TranslationPage() {
     }
   };
 
+  // Fonction utilitaire pour choper le texte sélectionné
+  const getSelectedText = () => {
+    if (window.getSelection) {
+      return window.getSelection().toString();
+    }
+    return "";
+  };
+
+  // Appelé lorsque l'on clique sur "Ajouter au glossaire" (source)
+  const handleAddSourceSelection = () => {
+    const snippet = getSelectedText();
+    if (snippet) {
+      setSelectedSourceSnippet(snippet);
+      setSelectedTargetSnippet("");
+      setIsAddTermModalOpen(true);
+    } else {
+      alert("Veuillez sélectionner du texte dans la zone source.");
+    }
+  };
+
+  // Appelé lorsque l'on clique sur "Ajouter au glossaire" (target)
+  const handleAddTargetSelection = () => {
+    const snippet = getSelectedText();
+    if (snippet) {
+      setSelectedSourceSnippet("");
+      setSelectedTargetSnippet(snippet);
+      setIsAddTermModalOpen(true);
+    } else {
+      alert("Veuillez sélectionner du texte dans la zone de traduction.");
+    }
+  };
+
+  // Callback quand on a ajouté ou créé un glossaire + term
+  const handleTermAdded = () => {
+    // On peut éventuellement refetch les glossaires
+    // ou juste rafraîchir l’UI, etc.
+    console.log("Nouveau terme ajouté !");
+  };
+
   return (
     <div className="flex flex-col md:flex-row">
+      {/* Liste des glossaires à gauche */}
       <div className="p-4 bg-base-100 w-full md:w-1/4 md:sticky md:top-0">
         <GlossaryList
           glossaries={glossaries}
@@ -278,6 +328,7 @@ export default function TranslationPage() {
       <div className="flex flex-col flex-grow p-4">
         {error && <div className="alert alert-error">{error}</div>}
 
+        {/* Modèle de traduction */}
         <div className="mb-4">
           <label className="label">Modèle de traduction</label>
           <select
@@ -287,10 +338,11 @@ export default function TranslationPage() {
           >
             <option value="gemini">Google Gemini</option>
             <option value="claude">Anthropic Claude</option>
-            <option value="gpt">OpenAI GPT-o1</option>
+            <option value="gpt">OpenAI GPT</option>
           </select>
         </div>
 
+        {/* Zones texte source/target */}
         <div className="flex flex-col md:flex-row md:space-x-4">
           <div className="flex flex-col w-full md:w-1/2">
             <select
@@ -302,12 +354,23 @@ export default function TranslationPage() {
               <option value="français">Français</option>
               <option value="portugais">Portugais</option>
             </select>
-            <textarea
-              className="textarea textarea-bordered min-h-[200px] w-full"
-              placeholder="Entrez le texte à traduire"
-              value={sourceText}
-              onChange={(e) => setSourceText(e.target.value)}
-            />
+
+            <div className="relative">
+              <textarea
+                className="textarea textarea-bordered min-h-[200px] w-full"
+                placeholder="Entrez le texte à traduire"
+                value={sourceText}
+                onChange={(e) => setSourceText(e.target.value)}
+              />
+              <button
+                type="button"
+                className="btn btn-xs btn-accent absolute bottom-2 right-2"
+                onClick={handleAddSourceSelection}
+                title="Sélectionnez du texte, puis cliquez"
+              >
+                Ajouter au glossaire
+              </button>
+            </div>
           </div>
 
           <div className="flex flex-col w-full md:w-1/2 mt-4 md:mt-0">
@@ -333,10 +396,19 @@ export default function TranslationPage() {
               >
                 <Copy className="w-5 h-5" />
               </button>
+              <button
+                type="button"
+                className="btn btn-xs btn-accent absolute bottom-2 right-2"
+                onClick={handleAddTargetSelection}
+                title="Sélectionnez du texte, puis cliquez"
+              >
+                Ajouter au glossaire
+              </button>
             </div>
           </div>
         </div>
 
+        {/* Bouton Traduire */}
         <button
           className={`btn btn-primary mt-4 ${isLoading ? "loading" : ""}`}
           onClick={handleTranslate}
@@ -345,7 +417,17 @@ export default function TranslationPage() {
           {isLoading ? "Traduction en cours..." : "Traduire"}
         </button>
 
+        {/* Historique */}
         <TranslationHistory refreshTrigger={refreshTrigger} />
+
+        {/* Modal pour ajouter un terme */}
+        <AddTermModal
+          isOpen={isAddTermModalOpen}
+          onClose={() => setIsAddTermModalOpen(false)}
+          initialSource={selectedSourceSnippet}
+          initialTarget={selectedTargetSnippet}
+          onTermAdded={handleTermAdded}
+        />
       </div>
     </div>
   );

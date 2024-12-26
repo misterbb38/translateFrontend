@@ -14,16 +14,8 @@ function App() {
     <Router>
       <TopBar />
       <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route
-          path="/home"
-          element={
-            <PrivateRoute>
-              {" "}
-              <HomePage />{" "}
-            </PrivateRoute>
-          }
-        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<HomePage />} />
         <Route
           path="/translate"
           element={
