@@ -1,14 +1,37 @@
 // src/components/TopBar.jsx
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { Crown } from "lucide-react";
 export default function TopBar() {
+  const [subscription, setSubscription] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
+
+  useEffect(() => {
+    if (token) {
+      const fetchSubscriptionStatus = async () => {
+        try {
+          const response = await fetch(`${apiUrl}/api/subscriptions/status`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await response.json();
+          if (response.ok) {
+            setSubscription(data);
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération du statut:", error);
+        }
+      };
+
+      fetchSubscriptionStatus();
+    }
+  }, [token]);
 
   return (
     <nav className="bg-base-200 rounded-b-lg shadow-lg flex justify-center mb-4">
@@ -24,6 +47,19 @@ export default function TopBar() {
             <li>
               <Link to="/glossaries">Glossaires</Link>
             </li>
+            {token && subscription && (
+              <div className="flex items-center">
+                <Link
+                  to="/subscriptions"
+                  className={`btn btn-ghost btn-sm gap-2 ${
+                    subscription.plan !== "free" ? "text-primary" : ""
+                  }`}
+                >
+                  <Crown className="w-4 h-4" />
+                  {subscription.plan === "free" ? "Plan Gratuit" : "Premium"}
+                </Link>
+              </div>
+            )}
             <li>
               <button onClick={handleLogout}>Déconnexion</button>
             </li>

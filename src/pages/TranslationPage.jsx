@@ -1,10 +1,37 @@
 // src/pages/TranslationPage.jsx
 import { useState, useEffect } from "react";
-import { Copy } from "lucide-react";
+import { Copy, Lock, AlertTriangle } from "lucide-react";
 import GlossaryList from "../components/GlossaryList";
 import TranslationHistory from "../components/TranslationHistory";
 import AddTermModal from "../components/AddTermModal";
 import DefinitionPopup from "../components/DefinitionPopup";
+
+const PLAN_FEATURES = {
+  free: {
+    maxLength: 1000,
+    availableModels: ["gemini"],
+    showAds: true,
+    watermark: true,
+  },
+  starter: {
+    maxLength: 3000,
+    availableModels: ["gemini", "gpt"],
+    showAds: false,
+    watermark: false,
+  },
+  pro: {
+    maxLength: 10000,
+    availableModels: ["gemini", "gpt", "claude"],
+    showAds: false,
+    watermark: false,
+  },
+  enterprise: {
+    maxLength: Infinity,
+    availableModels: ["gemini", "gpt", "claude"],
+    showAds: false,
+    watermark: false,
+  },
+};
 
 export default function TranslationPage() {
   const [sourceText, setSourceText] = useState("");
@@ -20,6 +47,10 @@ export default function TranslationPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isAddTermModalOpen, setIsAddTermModalOpen] = useState(false);
 
+  //type user
+  const [subscription, setSubscription] = useState(null);
+  const [usageStats, setUsageStats] = useState(null);
+
   // Pour stocker le texte sélectionné
   const [selectedSourceSnippet, setSelectedSourceSnippet] = useState("");
   const [selectedTargetSnippet, setSelectedTargetSnippet] = useState("");
@@ -29,6 +60,26 @@ export default function TranslationPage() {
 
   const token = localStorage.getItem("token");
   const apiUrl = import.meta.env.VITE_APP_API_BASE_URL;
+
+  // Récupérer les informations d'abonnement
+  useEffect(() => {
+    const fetchSubscriptionInfo = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/api/subscriptions/status`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setSubscription(data);
+          setModel(PLAN_FEATURES[data.plan].availableModels[0]);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération du statut:", error);
+      }
+    };
+
+    fetchSubscriptionInfo();
+  }, [token]);
 
   useEffect(() => {
     const fetchGlossaries = async () => {
@@ -62,6 +113,25 @@ export default function TranslationPage() {
   const handleTranslate = async () => {
     if (!sourceText) {
       setError("Veuillez entrer le texte à traduire");
+      return;
+    }
+
+    // Vérifier les limites du plan
+    if (sourceText.length > PLAN_FEATURES[subscription.plan].maxLength) {
+      setError(
+        `Votre plan est limité à ${
+          PLAN_FEATURES[subscription.plan].maxLength
+        } caractères par traduction`
+      );
+      return;
+    }
+
+    // Vérifier l'utilisation mensuelle
+    if (
+      usageStats?.characters + sourceText.length >
+      subscription.limits.characters
+    ) {
+      setError("Vous avez atteint votre limite mensuelle de caractères");
       return;
     }
 
@@ -158,6 +228,20 @@ export default function TranslationPage() {
 
   return (
     <div className="flex flex-col md:flex-row">
+      {/* Afficher la bannière d'utilisation pour les plans gratuits */}
+      {subscription &&
+        subscription.plan === "free" &&
+        PLAN_FEATURES[subscription.plan].showAds && (
+          <div className="bg-base-200 p-4 text-center">
+            <p>
+              Passez à un plan supérieur pour accéder à plus de fonctionnalités
+              !
+            </p>
+            <a href="/subscriptions" className="btn btn-primary btn-sm mt-2">
+              Voir les plans
+            </a>
+          </div>
+        )}
       {/* Liste des glossaires à gauche */}
       <div className="p-4 bg-base-100 w-full md:w-1/4 md:sticky md:top-0">
         <GlossaryList
@@ -169,7 +253,19 @@ export default function TranslationPage() {
 
       <div className="flex flex-col flex-grow p-4">
         {error && <div className="alert alert-error">{error}</div>}
-        {/* Modèle de traduction */}
+        {/* Alertes d'utilisation */}
+        {subscription && usageStats && subscription.limits && (
+          <div className="alert alert-info mb-4">
+            <AlertTriangle className="w-4 h-4" />
+            <span>
+              Utilisation : {usageStats.characters}/
+              {subscription.limits.characters} caractères (
+              {usageStats.translations}/{subscription.limits.translations}{" "}
+              traductions)
+            </span>
+          </div>
+        )}
+        {/* Modèle de traduction
         <div className="mb-4">
           <label className="label">Modèle de traduction</label>
           <select
@@ -181,7 +277,39 @@ export default function TranslationPage() {
             <option value="claude">Anthropic Claude</option>
             <option value="gpt">OpenAI GPT</option>
           </select>
-        </div>
+        </div> */}
+
+        {/* Sélection du modèle */}
+        {subscription && (
+          <div className="mb-4">
+            <label className="label">Modèle de traduction</label>
+            <select
+              className="select select-bordered w-full max-w-xs"
+              value={model}
+              onChange={(e) => setModel(e.target.value)}
+            >
+              {PLAN_FEATURES[subscription.plan].availableModels.map((m) => (
+                <option key={m} value={m}>
+                  {m === "gemini"
+                    ? "Google Gemini"
+                    : m === "claude"
+                    ? "Anthropic Claude"
+                    : "OpenAI GPT"}
+                </option>
+              ))}
+            </select>
+            {!PLAN_FEATURES[subscription.plan].availableModels.includes(
+              "claude"
+            ) && (
+              <div className="text-sm text-base-content/70 mt-1 flex items-center gap-1">
+                <Lock size={12} />
+                <span>
+                  Modèles premium disponibles dans les plans supérieurs
+                </span>
+              </div>
+            )}
+          </div>
+        )}
         {/* Zones texte source/target */}
         <div className="flex flex-col md:flex-row md:space-x-4">
           <div className="flex flex-col w-full md:w-1/2">
@@ -193,6 +321,8 @@ export default function TranslationPage() {
               <option value="anglais">Anglais</option>
               <option value="français">Français</option>
               <option value="portugais">Portugais</option>
+              <option value="spagnole">Spagnole</option>
+              <option value="arabe">Arabe</option>
             </select>
 
             <div className="relative">
@@ -223,6 +353,8 @@ export default function TranslationPage() {
               <option value="anglais">Anglais</option>
               <option value="français">Français</option>
               <option value="portugais">Portugais</option>
+              <option value="spagnole">Spagnole</option>
+              <option value="arabe">Arabe</option>
             </select>
             <div className="relative">
               <textarea
@@ -258,6 +390,12 @@ export default function TranslationPage() {
             position={definitionPosition}
             onClose={() => setSelectedWord(null)}
           />
+        )}
+        {subscription && (
+          <div className="text-sm text-base-content/70 mt-2">
+            Limite de caractères : {sourceText.length}/
+            {PLAN_FEATURES[subscription.plan].maxLength}
+          </div>
         )}
         {/* Bouton Traduire */}
         <button

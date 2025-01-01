@@ -8,14 +8,21 @@ import GlossaryPage from "./pages/GlossaryPage";
 import TranslationPage from "./pages/TranslationPage";
 import AddEditGlossaryPage from "./pages/AddEditGlossaryPage";
 import PrivateRoute from "./components/PrivateRoute";
+import SubscriptionPage from "./pages/SubscriptionPage";
+import PaymentSuccessPage from "./pages/PaymentSuccessPage";
+import SubscriptionAlert from "./components/SubscriptionAlert";
+import SuccessPage from "./pages/SuccessPage";
 
 function App() {
   return (
     <Router>
       <TopBar />
+      <SubscriptionAlert />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<HomePage />} />
+        <Route path="/payment/success" element={<SuccessPage />} />
+        <Route path="/alert" element={<SubscriptionAlert />} />
         <Route
           path="/translate"
           element={
@@ -50,6 +57,22 @@ function App() {
         />
 
         <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/subscriptions"
+          element={
+            <PrivateRoute>
+              <SubscriptionPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/payment/success"
+          element={
+            <PrivateRoute>
+              <PaymentSuccessPage />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </Router>
   );

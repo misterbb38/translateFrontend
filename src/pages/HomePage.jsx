@@ -239,7 +239,7 @@ export default function HomePage() {
               </button>
               <button
                 className="btn btn-outline w-full sm:w-auto px-8"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/login")}
               >
                 Se Connecter
               </button>
