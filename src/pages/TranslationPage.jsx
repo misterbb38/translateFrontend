@@ -229,7 +229,7 @@ export default function TranslationPage() {
   return (
     <div className="flex flex-col md:flex-row">
       {/* Afficher la bannière d'utilisation pour les plans gratuits */}
-      {subscription &&
+      {/* {subscription &&
         subscription.plan === "free" &&
         PLAN_FEATURES[subscription.plan].showAds && (
           <div className="bg-base-200 p-4 text-center">
@@ -241,7 +241,7 @@ export default function TranslationPage() {
               Voir les plans
             </a>
           </div>
-        )}
+        )} */}
       {/* Liste des glossaires à gauche */}
       <div className="p-4 bg-base-100 w-full md:w-1/4 md:sticky md:top-0">
         <GlossaryList
