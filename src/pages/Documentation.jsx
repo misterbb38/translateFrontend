@@ -716,10 +716,10 @@ const Documentation = () => {
                 <CreditCard className="w-5 h-5 text-primary" />
                 <span>Cartes bancaires (Visa, Mastercard)</span>
               </li>
-              <li className="flex items-center gap-2">
+              {/* <li className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-primary" />
                 <span>Mobile Money (Orange Money, Wave, MTN Money)</span>
-              </li>
+              </li> */}
             </ul>
           </div>
 
