@@ -12,7 +12,7 @@ import SubscriptionPage from "./pages/SubscriptionPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import SubscriptionAlert from "./components/SubscriptionAlert";
 import SuccessPage from "./pages/SuccessPage";
-
+import Documentation from "./pages/Documentation";
 function App() {
   return (
     <Router>
@@ -20,6 +20,7 @@ function App() {
       <SubscriptionAlert />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/documentation" element={<Documentation />} />
         <Route path="/" element={<HomePage />} />
         <Route path="/payment/success" element={<SuccessPage />} />
         <Route path="/alert" element={<SubscriptionAlert />} />
