@@ -1,45 +1,4 @@
-// import { useEffect } from "react";
-// import { useSearchParams } from "react-router-dom";
 
-// export default function SuccessPage() {
-//   const [searchParams] = useSearchParams();
-
-//   useEffect(() => {
-//     const sessionId = searchParams.get("session_id");
-//     const planId = searchParams.get("plan");
-
-//     // Appeler votre endpoint backend pour vérifier et mettre à jour le plan
-//     if (sessionId && planId) {
-//       fetch(
-//         `${
-//           import.meta.env.VITE_APP_API_BASE_URL
-//         }/api/subscriptions/verify-checkout`,
-//         {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//             Authorization: `Bearer ${localStorage.getItem("token")}`,
-//           },
-//           body: JSON.stringify({ sessionId, planId }),
-//         }
-//       )
-//         .then((res) => res.json())
-//         .then((data) => {
-//           console.log("Mise à jour du plan :", data);
-//         })
-//         .catch((err) => {
-//           console.error("Erreur lors de la vérification du checkout :", err);
-//         });
-//     }
-//   }, []);
-
-//   return (
-//     <div className="container mx-auto py-8">
-//       <h1 className="text-3xl mb-4">Merci pour votre achat !</h1>
-//       <p>Votre paiement a bien été effectué.</p>
-//     </div>
-//   );
-// }
 
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
